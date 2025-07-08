@@ -1,8 +1,7 @@
-import Empleado from "../models/Empleado.js";
+import Empleado from "../models/empleado.js";
 
 const httpEmpleado = {
-
-  // Obtener todos los empleados
+  // Listar todos los empleados
   getEmpleados: async (req, res) => {
     try {
       const empleados = await Empleado.find().sort({ createdAt: -1 });
@@ -13,14 +12,23 @@ const httpEmpleado = {
     }
   },
 
-  // Obtener empleados activos/inactivos
-  getEmpleadosByEstado: async (req, res) => {
+  // Listar empleados activos
+  getEmpleadosActivos: async (req, res) => {
     try {
-      const { estado } = req.params; // true o false
-      const empleados = await Empleado.find({ estado: estado === "true" });
-      res.json({ empleados });
+      const activos = await Empleado.find({ estado: true }).sort({ createdAt: -1 });
+      res.json({ empleados: activos });
     } catch (error) {
-      res.status(500).json({ error: "Error al filtrar empleados por estado" });
+      res.status(500).json({ error: "Error al obtener empleados activos" });
+    }
+  },
+
+  // Listar empleados inactivos
+  getEmpleadosInactivos: async (req, res) => {
+    try {
+      const inactivos = await Empleado.find({ estado: false }).sort({ createdAt: -1 });
+      res.json({ empleados: inactivos });
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener empleados inactivos" });
     }
   },
 
@@ -39,26 +47,26 @@ const httpEmpleado = {
   // Crear empleado
   postEmpleado: async (req, res) => {
     try {
-      const datos = req.body;
-      const nuevoEmpleado = new Empleado(datos);
+      const data = req.body;
+      const nuevoEmpleado = new Empleado(data);
       await nuevoEmpleado.save();
-      res.status(201).json({ message: "Empleado creado correctamente", empleado: nuevoEmpleado });
+      res.status(201).json({ message: "Empleado creado", empleado: nuevoEmpleado });
     } catch (error) {
       console.error("Error al crear empleado:", error);
       res.status(400).json({ error: "No se pudo registrar el empleado" });
     }
   },
 
-  // Actualizar empleado
+  // Modificar empleado
   putEmpleado: async (req, res) => {
     try {
       const { id } = req.params;
-      const { _id, ...dataActualizada } = req.body;
-      const empleado = await Empleado.findByIdAndUpdate(id, dataActualizada, { new: true });
-      if (!empleado) return res.status(404).json({ error: "Empleado no encontrado" });
-      res.json({ message: "Empleado actualizado", empleado });
+      const { _id, ...data } = req.body;
+      const actualizado = await Empleado.findByIdAndUpdate(id, data, { new: true });
+      if (!actualizado) return res.status(404).json({ error: "Empleado no encontrado" });
+      res.json({ message: "Empleado actualizado", empleado: actualizado });
     } catch (error) {
-      res.status(400).json({ error: "Error al actualizar el empleado" });
+      res.status(400).json({ error: "No se pudo actualizar el empleado" });
     }
   },
 
@@ -67,10 +75,9 @@ const httpEmpleado = {
     try {
       const { id } = req.params;
       const empleado = await Empleado.findByIdAndUpdate(id, { estado: true }, { new: true });
-      if (!empleado) return res.status(404).json({ error: "Empleado no encontrado" });
       res.json({ message: "Empleado activado", empleado });
     } catch (error) {
-      res.status(500).json({ error: "No se pudo activar el empleado" });
+      res.status(500).json({ error: "Error al activar el empleado" });
     }
   },
 
@@ -79,13 +86,12 @@ const httpEmpleado = {
     try {
       const { id } = req.params;
       const empleado = await Empleado.findByIdAndUpdate(id, { estado: false }, { new: true });
-      if (!empleado) return res.status(404).json({ error: "Empleado no encontrado" });
       res.json({ message: "Empleado desactivado", empleado });
     } catch (error) {
-      res.status(500).json({ error: "No se pudo desactivar el empleado" });
+      res.status(500).json({ error: "Error al desactivar el empleado" });
     }
   }
-
 };
 
 export default httpEmpleado;
+

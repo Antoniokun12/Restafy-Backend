@@ -1,19 +1,18 @@
-import Gasto from "../models/Gasto.js";
+import Gasto from "../models/gasto.js";
 
 const httpGasto = {
-
-  // Obtener todos los gastos
+  // Listar todos los gastos
   getGastos: async (req, res) => {
     try {
       const gastos = await Gasto.find().populate("usuarioid", "nombre correo").sort({ createdAt: -1 });
       res.json({ gastos });
     } catch (error) {
-      console.error("Error al obtener los gastos:", error);
+      console.error(error);
       res.status(500).json({ error: "Error al obtener los gastos" });
     }
   },
 
-  // Obtener un gasto por ID
+  // Obtener gasto por ID
   getGastoById: async (req, res) => {
     try {
       const { id } = req.params;
@@ -21,39 +20,38 @@ const httpGasto = {
       if (!gasto) return res.status(404).json({ error: "Gasto no encontrado" });
       res.json({ gasto });
     } catch (error) {
-      console.error("Error al buscar gasto:", error);
       res.status(400).json({ error: "ID inválido o error en la consulta" });
     }
   },
 
-  // Crear un nuevo gasto
+  // Crear nuevo gasto
   postGasto: async (req, res) => {
     try {
-      const { fecha, descripcion, monto, metodoPago, usuarioid, observaciones } = req.body;
-      const nuevoGasto = new Gasto({ fecha, descripcion, monto, metodoPago, usuarioid, observaciones });
+      const data = req.body;
+      const nuevoGasto = new Gasto(data);
       await nuevoGasto.save();
       res.status(201).json({ message: "Gasto registrado con éxito", gasto: nuevoGasto });
     } catch (error) {
-      console.error("Error al crear gasto:", error);
+      console.error(error);
       res.status(400).json({ error: "No se pudo registrar el gasto" });
     }
   },
 
-  // Actualizar un gasto
+  // Modificar gasto
   putGasto: async (req, res) => {
     try {
       const { id } = req.params;
-      const { _id, ...data } = req.body;
-      const gastoActualizado = await Gasto.findByIdAndUpdate(id, data, { new: true });
+      const { _id, ...resto } = req.body;
+      const gastoActualizado = await Gasto.findByIdAndUpdate(id, resto, { new: true });
       if (!gastoActualizado) return res.status(404).json({ error: "Gasto no encontrado" });
       res.json({ message: "Gasto actualizado", gasto: gastoActualizado });
     } catch (error) {
-      console.error("Error al actualizar gasto:", error);
+      console.error(error);
       res.status(400).json({ error: "No se pudo actualizar el gasto" });
     }
   },
 
-  // Eliminar un gasto (opcional)
+  // Eliminar gasto (opcional)
   deleteGasto: async (req, res) => {
     try {
       const { id } = req.params;
@@ -61,8 +59,7 @@ const httpGasto = {
       if (!gasto) return res.status(404).json({ error: "Gasto no encontrado" });
       res.json({ message: "Gasto eliminado correctamente" });
     } catch (error) {
-      console.error("Error al eliminar gasto:", error);
-      res.status(500).json({ error: "Error interno al eliminar gasto" });
+      res.status(500).json({ error: "No se pudo eliminar el gasto" });
     }
   }
 };
