@@ -15,8 +15,8 @@ const httpEmpleado = {
   // Listar empleados activos
   getEmpleadosActivos: async (req, res) => {
     try {
-      const activos = await Empleado.find({ estado: true }).sort({ createdAt: -1 });
-      res.json({ empleados: activos });
+      const activados = await Empleado.find({ estado: true }).sort({ createdAt: -1 });
+      res.json( activados );
     } catch (error) {
       res.status(500).json({ error: "Error al obtener empleados activos" });
     }
@@ -25,8 +25,8 @@ const httpEmpleado = {
   // Listar empleados inactivos
   getEmpleadosInactivos: async (req, res) => {
     try {
-      const inactivos = await Empleado.find({ estado: false }).sort({ createdAt: -1 });
-      res.json({ empleados: inactivos });
+      const desactivados = await Empleado.find({ estado: false }).sort({ createdAt: -1 });
+      res.json({ desactivados });
     } catch (error) {
       res.status(500).json({ error: "Error al obtener empleados inactivos" });
     }
