@@ -10,7 +10,7 @@ const detalleFacturaSchema = new mongoose.Schema({
 
 const facturaSchema = new mongoose.Schema({
   fecha: { type: Date, default: Date.now },
-  metodoPago: { type: String, required: true, enum: ['Efectivo', 'Tarjeta', 'EnLinea'], trim: true },
+  metodoPago: { type: String, required: true, enum: ['efectivo', 'tarjeta', 'en_linea'], trim: true },
   total: { type: Number, required: true, min: 0 },
   clienteNombre: { type: String, required: true, trim: true },
   clienteTelefono: { type: String, required: true, trim: true },

@@ -13,17 +13,27 @@ const httpInventario = {
     }
   },
 
-  // Obtener inventarios por estado (activos o inactivos)
-  getInventariosByEstado: async (req, res) => {
-    try {
-      const { estado } = req.params;
-      const inventarios = await Inventario.find({ estado: estado === "true" });
-      res.json({ inventarios });
-    } catch (error) {
-      console.error("Error al filtrar inventarios por estado:", error);
-      res.status(500).json({ error: "Error al filtrar inventarios" });
-    }
-  },
+  // Obtener inventario por estado (activo)
+    getInventarioactivado: async (req, res) => {
+      try {
+        const activados = await Inventario.find({ estado: 1 }).sort({ _id: -1 });
+        res.json({ activados });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al obtener Inventarios activado' });
+      }
+    },
+  
+    // Obtener inventario por estado (desactivado)
+    getInventariodesactivado: async (req, res) => {
+      try {
+        const desactivados = await Inventario.find({ estado: 0 }).sort({ _id: -1 });
+        res.json({ desactivados })
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al obtener Inventarios desactivado' });
+      }
+    },
 
   // Obtener inventario por ID
   getInventarioById: async (req, res) => {

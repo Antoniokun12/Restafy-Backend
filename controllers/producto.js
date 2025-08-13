@@ -1,4 +1,4 @@
-import Producto from "../models/Producto.js";
+import Producto from "../models/producto.js";
 
 const httpProducto = {
 
@@ -13,13 +13,23 @@ const httpProducto = {
     }
   },
 
-  // Obtener productos por disponibilidad
+  // Obtener productos disponibles
   getProductosDisponibles: async (req, res) => {
     try {
       const productos = await Producto.find({ disponible: true }).sort({ nombre: 1 });
       res.json({ productos });
     } catch (error) {
       res.status(500).json({ error: "Error al obtener productos disponibles" });
+    }
+  },
+
+  // Obtener productos NO disponibles
+  getProductosNoDisponibles: async (req, res) => {
+    try {
+      const productos = await Producto.find({ disponible: false }).sort({ nombre: 1 });
+      res.json({ productos });
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener productos no disponibles" });
     }
   },
 
@@ -62,17 +72,27 @@ const httpProducto = {
     }
   },
 
-  // Cambiar disponibilidad
-  cambiarDisponibilidad: async (req, res) => {
+  // Activar producto
+  activarProducto: async (req, res) => {
     try {
       const { id } = req.params;
-      const producto = await Producto.findById(id);
+      const producto = await Producto.findByIdAndUpdate(id, { disponible: true }, { new: true });
       if (!producto) return res.status(404).json({ error: "Producto no encontrado" });
-      producto.disponible = !producto.disponible;
-      await producto.save();
-      res.json({ message: `Producto ${producto.disponible ? 'activado' : 'desactivado'}`, producto });
+      res.json({ message: "Producto activado", producto });
     } catch (error) {
-      res.status(500).json({ error: "No se pudo cambiar la disponibilidad del producto" });
+      res.status(500).json({ error: "No se pudo activar el producto" });
+    }
+  },
+
+  // Desactivar producto
+  desactivarProducto: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const producto = await Producto.findByIdAndUpdate(id, { disponible: false }, { new: true });
+      if (!producto) return res.status(404).json({ error: "Producto no encontrado" });
+      res.json({ message: "Producto desactivado", producto });
+    } catch (error) {
+      res.status(500).json({ error: "No se pudo desactivar el producto" });
     }
   }
 

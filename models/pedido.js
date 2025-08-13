@@ -14,7 +14,7 @@ const pedidoSchema = new mongoose.Schema({
   tipoPedido: { type: String, required: true, enum: ['Mesa', 'Domicilio'], trim: true },
   estado: { type: String, required: true, enum: ['Preparación', 'Listo'], trim: true },
   total: { type: Number, required: true, min: 0 },
-  metodoPago: { type: String, enum: ['efectivo', 'tarjeta', 'en linea'], trim: true },
+  metodoPago: { type: String, enum: ['efectivo', 'tarjeta', 'en_linea'], trim: true },
   mesaAsignada: { type: Number },
   clienteNombre: { type: String, trim: true },
   clienteTelefono: { type: String, trim: true },
