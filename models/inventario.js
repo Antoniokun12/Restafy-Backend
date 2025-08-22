@@ -10,4 +10,5 @@ const inventarioSchema = new mongoose.Schema({
   timestamps: true
 });
 
-export default mongoose.model("Inventario", inventarioSchema);
+export default mongoose.models.Inventario ||
+  mongoose.model("Inventario", inventarioSchema);

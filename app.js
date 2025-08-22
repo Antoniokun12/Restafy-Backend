@@ -1,7 +1,9 @@
-import  express  from "express"
-import 'dotenv/config'
+import express from "express";
+import "dotenv/config";
 import dbConexion from "./database/cnxmongoose.js";
-import cors from 'cors';
+import cors from "cors";
+import http from "http";
+import { Server as SocketIOServer } from "socket.io";
 
 import Usuario from "./routes/usuario.js";
 import Empleado from "./routes/empleado.js";
@@ -10,21 +12,42 @@ import Inventario from "./routes/inventario.js";
 import Producto from "./routes/producto.js";
 import uploadRoutes from "./routes/upload.js";
 import Pedido from "./routes/pedido.js";
+import Menu from "./routes/menu.js";
 
-const app = express()
-app.use(express.json())
+const app = express();
+app.use(express.json());
 app.use(cors());
-app.use('/uploads', express.static('uploads'));
-app.use('/api/upload', uploadRoutes)
+app.use("/uploads", express.static("uploads"));
+app.use("/api/upload", uploadRoutes);
 
-app.use("/api/usuario",Usuario)
-app.use("/api/empleado",Empleado)
-app.use("/api/gasto",Gasto)
-app.use("/api/inventario",Inventario)
-app.use("/api/producto",Producto)
-app.use("/api/pedido",Pedido)
+// --- crea el server http y socket.io ANTES de las rutas
+const server = http.createServer(app);
+const io = new SocketIOServer(server, {
+  cors: { origin: "*" },
+  path: "/socket.io",
+});
 
-app.listen(process.env.PORT,()=>{
-    console.log(`Servidor escuchando en el puerto ${process.env.PORT}`);
-    dbConexion()
-})
+// agrega req.io ANTES de montar rutas
+app.use((req, _res, next) => {
+  req.io = io;
+  next();
+});
+
+// rutas
+app.use("/api/usuario", Usuario);
+app.use("/api/empleado", Empleado);
+app.use("/api/gasto", Gasto);
+app.use("/api/inventario", Inventario);
+app.use("/api/producto", Producto);
+app.use("/api/pedido", Pedido);
+app.use("/api/menu", Menu);
+
+io.on("connection", (socket) => {
+  console.log("Cliente conectado:", socket.id);
+});
+
+const PORT = process.env.PORT || 4500;
+server.listen(PORT, () => {
+  console.log(`Servidor escuchando en el puerto ${PORT}`);
+  dbConexion();
+});

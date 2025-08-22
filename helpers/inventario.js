@@ -1,4 +1,4 @@
-import Inventario from "../models/Inventario.js";
+import Inventario from "../models/inventario.js";
 
 const helpersInventario = {
   // Verifica si un ID existe

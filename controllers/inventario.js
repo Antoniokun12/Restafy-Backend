@@ -1,4 +1,4 @@
-import Inventario from "../models/Inventario.js";
+import Inventario from "../models/inventario.js"
 
 const httpInventario = {
 
@@ -16,7 +16,7 @@ const httpInventario = {
   // Obtener inventario por estado (activo)
     getInventarioactivado: async (req, res) => {
       try {
-        const activados = await Inventario.find({ estado: 1 }).sort({ _id: -1 });
+        const activados = await Inventario.find({ estado: true }).sort({ _id: -1 });
         res.json({ activados });
       } catch (error) {
         console.error(error);
@@ -27,7 +27,7 @@ const httpInventario = {
     // Obtener inventario por estado (desactivado)
     getInventariodesactivado: async (req, res) => {
       try {
-        const desactivados = await Inventario.find({ estado: 0 }).sort({ _id: -1 });
+        const desactivados = await Inventario.find({ estado: false }).sort({ _id: -1 });
         res.json({ desactivados })
       } catch (error) {
         console.error(error);
